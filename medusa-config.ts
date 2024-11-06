@@ -17,7 +17,7 @@ module.exports = defineConfig({
     },
   },
 
-   modules: [
+  modules: [
     {
       resolve: "@medusajs/medusa/cache-redis",
       options: {
@@ -42,5 +42,6 @@ module.exports = defineConfig({
 
   admin: {
     disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
 });
