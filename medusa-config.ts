@@ -56,6 +56,21 @@ module.exports = defineConfig({
         },
       },
     },
+
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          // other payment providers like stripe, paypal etc
+          {
+            resolve: "medusa-payment-paystack",
+            options: {
+              secret_key: process.env.PAYSTACK_SECRET_KEY,
+            } satisfies import("medusa-payment-paystack").PluginOptions,
+          },
+        ],
+      },
+    },
   ],
 
   admin: {
