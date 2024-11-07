@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 import { Modules } from "@medusajs/framework/utils";
 
