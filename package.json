@@ -25,6 +25,7 @@
   "dependencies": {
     "@medusajs/admin-sdk": "latest",
     "@medusajs/cli": "latest",
+    "@medusajs/file-s3": "^2.0.2",
     "@medusajs/framework": "latest",
     "@medusajs/medusa": "latest",
     "@mikro-orm/core": "5.9.7",
