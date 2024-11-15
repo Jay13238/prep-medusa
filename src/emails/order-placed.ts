@@ -17,7 +17,7 @@ export default async function orderPlacedHandler({
     });
 
     await notificationModuleService.createNotifications({
-      to: order.email,
+      to: "joshuahoffmann60@gmail.com",
       channel: "email",
       template: "d-6662b16a12fc47f58ec5625a4490b123 ", // Replace with your actual template ID
       data: {
