@@ -41,7 +41,7 @@ export default async function AdminOrderPlacedHandler({
           quantity: item.quantity,
           unit_price: item.unit_price,
         })),
-        total_amount: order.total,
+        
       },
     });
     console.log("Email notification sent successfully");
