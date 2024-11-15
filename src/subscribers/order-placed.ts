@@ -26,10 +26,6 @@ export default async function orderPlacedHandler({
       relations: ["items", "shipping_address"],
     });
     console.log("Order details retrieved successfully");
-
-    // Use `order.total` directly
-    const totalAmount = order.total;
-
     console.log("Preparing to send email notification");
     await notificationModuleService.createNotifications({
       to: order.email,
@@ -38,11 +34,11 @@ export default async function orderPlacedHandler({
       data: {
         shipping_address: order.shipping_address,
         items: order.items.map((item) => ({
-          title: item.title, // Use `item.title` directly as `product` is not available
+          title: item.product_title,
           quantity: item.quantity,
           unit_price: item.unit_price,
         })),
-        total_amount: totalAmount,
+        total_amount: order.total,
       },
     });
     console.log("Email notification sent successfully");
