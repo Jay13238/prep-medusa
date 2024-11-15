@@ -1,5 +1,8 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework";
-import { INotificationModuleService } from "@medusajs/framework/types";
+import {
+  INotificationModuleService,
+  IOrderModuleService,
+} from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 
 export default async function orderPlacedHandler({
@@ -12,16 +15,17 @@ export default async function orderPlacedHandler({
     container.resolve(Modules.NOTIFICATION);
   console.log("Notification module service resolved");
 
-  const orderService = container.resolve("orderService");
-  console.log("Order service resolved");
+  const orderModuleService: IOrderModuleService = container.resolve(
+    Modules.ORDER
+  );
+  console.log("Order module service resolved");
 
   try {
     console.log("Attempting to retrieve order details");
-    const order = await orderService.retrieve(data.id, {
+    const order = await orderModuleService.retrieveOrder(data.id, {
       relations: ["items", "shipping_address"],
     });
     console.log("Order details retrieved successfully");
-
     console.log("Preparing to send email notification");
     await notificationModuleService.createNotifications({
       to: order.email,
@@ -43,6 +47,7 @@ export default async function orderPlacedHandler({
     console.error("Full error object:", JSON.stringify(error, null, 2));
   }
 }
+
 export const config: SubscriberConfig = {
   event: "order.placed",
 };
