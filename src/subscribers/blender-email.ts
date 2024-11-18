@@ -75,7 +75,8 @@ export default async function BlenderCategoryOrderHandler({
           country_code: order.shipping_address.country_code,
         },
         items: blenderItems.map((item) => ({
-          title: item.title,
+          product_name: item.product_title,
+          variant_name: item.title ?? "N/A",
           quantity: item.quantity,
           unit_price: (item.unit_price / 100).toFixed(2),
         })),
