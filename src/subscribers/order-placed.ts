@@ -35,11 +35,10 @@ export default async function orderPlacedHandler({
         shipping_address: order.shipping_address,
         items: order.items.map((item) => ({
           title: item.product_title,
+          variant_name: item.title ?? "N/A",
           quantity: item.quantity,
           unit_price: item.unit_price,
         })),
-
-
       },
     });
     console.log("Email notification sent successfully");
