@@ -14,21 +14,38 @@ export default async function BlenderCategoryOrderHandler({
 
   const notificationModuleService: INotificationModuleService =
     container.resolve(Modules.NOTIFICATION);
+  console.log("Notification module service resolved");
+
   const orderModuleService: IOrderModuleService = container.resolve(
     Modules.ORDER
   );
+  console.log("Order module service resolved");
+
   const productModuleService: IProductModuleService = container.resolve(
     Modules.PRODUCT
   );
+  console.log("Product module service resolved");
 
   try {
+    console.log("Attempting to retrieve order details");
     const order = await orderModuleService.retrieveOrder(data.id, {
       relations: ["items", "shipping_address"],
     });
+    console.log("Order details retrieved successfully");
+
+    // Retrieve all product IDs from the order items
+    const productIds = order.items.map((item) => item.product_id);
+
+    // Fetch product details for each product ID
+    const products = await productModuleService.listProducts(
+      { id: productIds },
+      { select: ["id", "metadata"] }
+    );
 
     // Filter items with 'blender' metadata
     const blenderItems = order.items.filter((item) => {
-      return item.metadata?.blender === "blender";
+      const product = products.find((p) => p.id === item.product_id);
+      return product?.metadata?.blender === "blender";
     });
 
     if (blenderItems.length === 0) {
@@ -37,6 +54,8 @@ export default async function BlenderCategoryOrderHandler({
       );
       return;
     }
+
+    console.log("Preparing to send email notification");
 
     const adminEmail = "joshatard13@gmail.com";
 
@@ -56,10 +75,9 @@ export default async function BlenderCategoryOrderHandler({
           country_code: order.shipping_address.country_code,
         },
         items: blenderItems.map((item) => ({
-          product_name: item.product_title,
-          variant_name: item.variant_title,
+          title: item.title,
           quantity: item.quantity,
-          unit_price: (item.unit_price / 100).toFixed(2), // Convert from cents to dollars
+          unit_price: (item.unit_price / 100).toFixed(2),
         })),
       },
     });
