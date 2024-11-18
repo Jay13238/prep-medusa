@@ -12,15 +12,18 @@ export default async function BlenderCategoryOrderHandler({
 }: SubscriberArgs<{ id: string }>) {
   console.log("BlenderCategoryOrderHandler triggered. Order ID:", data.id);
 
+  // Resolve the notification service
   const notificationModuleService: INotificationModuleService =
     container.resolve(Modules.NOTIFICATION);
   console.log("Notification module service resolved");
 
+  // Resolve the order service
   const orderModuleService: IOrderModuleService = container.resolve(
     Modules.ORDER
   );
   console.log("Order module service resolved");
 
+  // Resolve the product service
   const productModuleService: IProductModuleService = container.resolve(
     Modules.PRODUCT
   );
@@ -58,21 +61,33 @@ export default async function BlenderCategoryOrderHandler({
 
     console.log("Preparing to send email notification");
 
-    const adminEmail = "joshuahoffmann60@gmail.com";
+    // Admin email address
+    const adminEmail = "joshatard13@gmail.com";
 
+    // Create and send the notification
     await notificationModuleService.createNotifications({
       to: adminEmail,
       channel: "email",
-      template: "d-6662b16a12fc47f58ec5625a4490b123", // Replace with your actual template ID
+      template: " d-42b869641e3e4b2fa9d413a5d46292e4", // Replace with your actual SendGrid template ID
       data: {
-        shipping_address: order.shipping_address,
+        shipping_address: {
+          first_name: order.shipping_address.first_name,
+          last_name: order.shipping_address.last_name,
+          address_1: order.shipping_address.address_1,
+          address_2: order.shipping_address.address_2,
+          city: order.shipping_address.city,
+          province: order.shipping_address.province,
+          postal_code: order.shipping_address.postal_code,
+          country_code: order.shipping_address.country_code,
+        },
         items: blenderItems.map((item) => ({
           title: item.title,
           quantity: item.quantity,
-          unit_price: item.unit_price,
+          unit_price: (item.unit_price / 100).toFixed(2), // Convert from cents to dollars
         })),
       },
     });
+
     console.log("Email notification sent successfully");
   } catch (error) {
     console.error("Error in BlenderCategoryOrderHandler:", error);
