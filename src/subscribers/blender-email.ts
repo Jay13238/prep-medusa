@@ -12,63 +12,51 @@ export default async function BlenderCategoryOrderHandler({
 }: SubscriberArgs<{ id: string }>) {
   console.log("BlenderCategoryOrderHandler triggered. Order ID:", data.id);
 
-  // Resolve the notification service
+  // Resolve services
   const notificationModuleService: INotificationModuleService =
     container.resolve(Modules.NOTIFICATION);
-  console.log("Notification module service resolved");
-
-  // Resolve the order service
   const orderModuleService: IOrderModuleService = container.resolve(
     Modules.ORDER
   );
-  console.log("Order module service resolved");
-
-  // Resolve the product service
   const productModuleService: IProductModuleService = container.resolve(
     Modules.PRODUCT
   );
-  console.log("Product module service resolved");
 
   try {
-    console.log("Attempting to retrieve order details");
+    // Retrieve order details
     const order = await orderModuleService.retrieveOrder(data.id, {
       relations: ["items", "shipping_address"],
     });
-    console.log("Order details retrieved successfully");
 
-    // Retrieve all product IDs from the order items
+    // Retrieve product IDs from order items
     const productIds = order.items.map((item) => item.product_id);
 
-    // Fetch product details for each product ID
-    const products = await productModuleService.listProducts({
-      id: productIds,
-    });
+    // Fetch product details, including metadata
+    const products = await productModuleService.listProducts(
+      { id: productIds },
+      { select: ["id", "metadata"] }
+    );
 
-    // Check if any product belongs to the "blender" category
+    // Filter items with 'blender' metadata
     const blenderItems = order.items.filter((item) => {
       const product = products.find((p) => p.id === item.product_id);
-      return product?.categories?.some(
-        (category) => category.handle === "blender"
-      );
+      return product?.metadata?.blender === true;
     });
 
     if (blenderItems.length === 0) {
       console.log(
-        'No items from the "blender" category in this order. Exiting handler.'
+        'No items with "blender" metadata in this order. Exiting handler.'
       );
       return;
     }
 
-    console.log("Preparing to send email notification");
+    // Prepare and send email notification
+    const adminEmail = "admin@example.com"; // Replace with actual admin email
 
-    // Admin email address
-    const adminEmail = "joshatard13@gmail.com";
-
-    // Create and send the notification
     await notificationModuleService.createNotifications({
       to: adminEmail,
       channel: "email",
-      template: " d-42b869641e3e4b2fa9d413a5d46292e4", // Replace with your actual SendGrid template ID
+      template: "your-template-id", // Replace with your actual template ID
       data: {
         shipping_address: {
           first_name: order.shipping_address.first_name,
@@ -91,7 +79,6 @@ export default async function BlenderCategoryOrderHandler({
     console.log("Email notification sent successfully");
   } catch (error) {
     console.error("Error in BlenderCategoryOrderHandler:", error);
-    console.error("Full error object:", JSON.stringify(error, null, 2));
   }
 }
 
