@@ -57,7 +57,7 @@ export default async function BlenderCategoryOrderHandler({
 
     console.log("Preparing to send email notification");
 
-    const adminEmail = "joshatard13@gmail.com";
+    const adminEmail = "orders@jameshenry.co.za";
 
     await notificationModuleService.createNotifications({
       to: adminEmail,

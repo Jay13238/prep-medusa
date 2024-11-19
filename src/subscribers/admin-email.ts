@@ -28,7 +28,7 @@ export default async function AdminOrderPlacedHandler({
     console.log("Order details retrieved successfully");
     console.log("Preparing to send email notification");
 
-     const adminEmail = "admin@preparationministry.com";
+     const adminEmail = "thepreparation@gmail.com";
 
     await notificationModuleService.createNotifications({
       to: adminEmail,
