@@ -6,11 +6,11 @@ import {
 } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 
-export default async function BlenderCategoryOrderHandler({
+export default async function BooksCategoryOrderHandler({
   event: { data },
   container,
 }: SubscriberArgs<{ id: string }>) {
-  console.log("BlenderCategoryOrderHandler triggered. Order ID:", data.id);
+  console.log("BooksCategoryOrderHandler triggered. Order ID:", data.id);
 
   const notificationModuleService: INotificationModuleService =
     container.resolve(Modules.NOTIFICATION);
@@ -39,25 +39,25 @@ export default async function BlenderCategoryOrderHandler({
     // Fetch product details for each product ID
     const products = await productModuleService.listProducts(
       { id: productIds },
-      { select: ["id", "metadata"] }
+      { select: ["id", "tags"] }
     );
 
-    // Filter items with 'blender' metadata
-    const blenderItems = order.items.filter((item) => {
+    // Filter items with 'books' tag
+    const booksItems = order.items.filter((item) => {
       const product = products.find((p) => p.id === item.product_id);
-      return product?.metadata?.blender === "blender";
+      return product?.tags?.some((tag) => tag.value === "books");
     });
 
-    if (blenderItems.length === 0) {
+    if (booksItems.length === 0) {
       console.log(
-        'No items with "blender" metadata found in this order. Exiting handler.'
+        'No items with "books" tag found in this order. Exiting handler.'
       );
       return;
     }
 
     console.log("Preparing to send email notification");
 
-    const adminEmail = "orders@jameshenry.co.za";
+    const adminEmail = "joshuahoffmann60@gmail.com";
 
     await notificationModuleService.createNotifications({
       to: adminEmail,
@@ -74,7 +74,7 @@ export default async function BlenderCategoryOrderHandler({
           postal_code: order.shipping_address.postal_code,
           country_code: order.shipping_address.country_code,
         },
-        items: blenderItems.map((item) => ({
+        items: booksItems.map((item) => ({
           product_name: item.product_title,
           variant_name: item.title ?? "N/A",
           quantity: item.quantity,
@@ -85,7 +85,7 @@ export default async function BlenderCategoryOrderHandler({
 
     console.log("Email notification sent successfully");
   } catch (error) {
-    console.error("Error in BlenderCategoryOrderHandler:", error);
+    console.error("Error in BooksCategoryOrderHandler:", error);
   }
 }
 
