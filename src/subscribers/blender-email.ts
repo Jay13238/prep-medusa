@@ -57,7 +57,7 @@ export default async function BooksCategoryOrderHandler({
 
     console.log("Preparing to send email notification");
 
-    const adminEmail = "joshuahoffmann60@gmail.com";
+    const adminEmail = "orders@jameshenry.co.za";
 
     await notificationModuleService.createNotifications({
       to: adminEmail,
