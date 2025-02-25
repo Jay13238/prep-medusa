@@ -36,6 +36,8 @@ export default async function AdminOrderPlacedHandler({
       template: "d-6662b16a12fc47f58ec5625a4490b123", // Replace with your actual template ID
       data: {
         shipping_address: order.shipping_address,
+        customer_email: order.email,
+        customer_phone: order.shipping_address.phone,
         items: order.items.map((item) => ({
           title: item.product_title,
           variant_name: item.title ?? "N/A",
